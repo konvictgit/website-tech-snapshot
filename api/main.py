@@ -8,7 +8,7 @@ import psycopg2.extras
 
 from scanner.crawler import run_scan
 from scanner.detector import detect, get_company
-from scanner.db import get_conn, upsert_website, insert_detection, fetch_websites, fetch_website
+from scanner.db import get_conn, upsert_website, insert_detection
 
 load_dotenv()
 
