@@ -2,7 +2,8 @@
 import requests
 import psycopg2
 import time
-from detector import detect_technologies, get_company
+from scanner.detector import detect_technologies, get_company
+
 from db import connect_db
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; MiniMixRankBot/1.0)"}
