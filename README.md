@@ -3,6 +3,8 @@
 > Detect what technologies websites are built with — powered by **Python, FastAPI, PostgreSQL, Supabase, Docker, Next.js** 🚀
 
 ---
+VIDEO
+https://github.com/konvictgit/website-tech-snapshot/blob/main/demo.mp4
 
 ## ✨ Why this project?
 - Inspired by [MixRank](https://mixrank.com/) — but a free & open-source mini version.  
