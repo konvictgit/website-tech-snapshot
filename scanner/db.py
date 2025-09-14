@@ -7,19 +7,23 @@ from dotenv import load_dotenv
 # load .env if present
 load_dotenv()
 
-DB_DSN = os.getenv("DB_DSN", "postgresql://webtech:webtechpass@127.0.0.1:5433/webtech")
+# prefer DATABASE_URL (Supabase / Render style), fallback to DB_DSN or local
+DB_URL = os.getenv(
+    "DATABASE_URL",
+    os.getenv("DB_DSN", "postgresql://webtech:webtechpass@127.0.0.1:5433/webtech")
+)
 
 def get_conn():
-    return psycopg2.connect(DB_DSN)
+    return psycopg2.connect(DB_URL)
 
 def upsert_website(conn, domain, url, status, http_status, title):
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO websites (domain, url, fetched_at, status, http_status, title)
+            INSERT INTO websites (domain, url, last_scanned, status, http_status, title)
             VALUES (%s, %s, now(), %s, %s, %s)
             ON CONFLICT (domain) DO UPDATE SET
                 url = EXCLUDED.url,
-                fetched_at = now(),
+                last_scanned = now(),
                 status = EXCLUDED.status,
                 http_status = EXCLUDED.http_status,
                 title = EXCLUDED.title
@@ -30,7 +34,6 @@ def upsert_website(conn, domain, url, status, http_status, title):
     return wid
 
 def insert_detection(conn, website_id, cms, js_libs, analytics, custom_tags, raw):
-    # normalize
     cms = cms if isinstance(cms, list) else []
     js_libs = js_libs if isinstance(js_libs, list) else []
     analytics = analytics if isinstance(analytics, list) else []
@@ -41,14 +44,7 @@ def insert_detection(conn, website_id, cms, js_libs, analytics, custom_tags, raw
         cur.execute("""
             INSERT INTO detections (website_id, detected_at, cms, js_libs, analytics, custom_tags, raw)
             VALUES (%s, now(), %s, %s, %s, %s, %s)
-        """, (
-            website_id,
-            cms,
-            js_libs,
-            analytics,
-            custom_tags,
-            Json(raw)
-        ))
+        """, (website_id, cms, js_libs, analytics, custom_tags, Json(raw)))
     conn.commit()
 
 def fetch_websites(per_page=50, offset=0, js_libs=None, cms=None):
@@ -66,15 +62,16 @@ def fetch_websites(per_page=50, offset=0, js_libs=None, cms=None):
     if where:
         where = "AND " + where
     qry = f"""
-      SELECT w.domain, w.url, w.fetched_at, d.cms, d.js_libs, d.analytics, d.custom_tags
+      SELECT w.domain, w.url, w.last_scanned, d.cms, d.js_libs, d.analytics, d.custom_tags
       FROM websites w
       JOIN LATERAL (
-        SELECT cms, js_libs, analytics, custom_tags FROM detections
+        SELECT cms, js_libs, analytics, custom_tags
+        FROM detections
         WHERE website_id = w.id
         ORDER BY detected_at DESC LIMIT 1
       ) d ON true
       WHERE 1=1 {where}
-      ORDER BY w.fetched_at DESC NULLS LAST
+      ORDER BY w.last_scanned DESC NULLS LAST
       LIMIT %s OFFSET %s;
     """
     params.extend([per_page, offset])
@@ -88,7 +85,7 @@ def fetch_website(domain):
     conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
-      SELECT w.domain, w.url, w.fetched_at, d.cms, d.js_libs, d.analytics, d.custom_tags, d.raw
+      SELECT w.domain, w.url, w.last_scanned, d.cms, d.js_libs, d.analytics, d.custom_tags, d.raw
       FROM websites w
       JOIN detections d ON d.website_id = w.id
       WHERE w.domain = %s

@@ -40,6 +40,20 @@ CREATE TABLE IF NOT EXISTS website_technologies (
 );
 
 -- ================================
+-- Detections table (for db.py compatibility)
+-- ================================
+CREATE TABLE IF NOT EXISTS detections (
+    id SERIAL PRIMARY KEY,
+    website_id INT NOT NULL REFERENCES websites(id) ON DELETE CASCADE,
+    detected_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    cms TEXT[] DEFAULT '{}',
+    js_libs TEXT[] DEFAULT '{}',
+    analytics TEXT[] DEFAULT '{}',
+    custom_tags TEXT[] DEFAULT '{}',
+    raw JSONB DEFAULT '{}'::jsonb
+);
+
+-- ================================
 -- Seed common technologies
 -- ================================
 INSERT INTO technologies (name, category) VALUES
