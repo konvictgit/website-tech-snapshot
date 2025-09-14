@@ -12,6 +12,11 @@
 
 ---
 
+## 🎥 Demo Video
+
+➡️ [Watch the demo](https://github.com/konvictgit/website-tech-snapshot/blob/main/docs/demo.mp4?raw=true)
+
+
 ## 🛠️ Tech Stack  
 
 <p align="center">
