@@ -7,3 +7,6 @@ beautifulsoup4
 lxml
 tldextract
 httpx
+aiohttp
+python-Wappalyzer
+python-whois
