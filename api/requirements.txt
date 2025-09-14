@@ -1,16 +1,16 @@
-# Core web framework
+# --- Core server ---
 fastapi
 uvicorn[standard]
-
-# HTTP + HTML parsing
-httpx
-beautifulsoup4
-
-# DB
-psycopg2-binary
-
-# Utils
 python-dotenv
 
-# Optional: for async + perf
-aiofiles
+# --- Database ---
+psycopg2-binary
+
+# --- HTTP / Parsing ---
+requests
+beautifulsoup4
+lxml
+tldextract
+
+# --- Extra ---
+httpx
