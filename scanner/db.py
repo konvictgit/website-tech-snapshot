@@ -1,4 +1,3 @@
-# scanner/db.py
 import os
 from psycopg2.extras import Json, RealDictCursor
 import psycopg2
@@ -15,6 +14,9 @@ DB_URL = os.getenv(
 
 def get_conn():
     return psycopg2.connect(DB_URL)
+
+def connect_db():  # ✅ alias for old code
+    return get_conn()
 
 def upsert_website(conn, domain, url, status, http_status, title):
     with conn.cursor() as cur:
