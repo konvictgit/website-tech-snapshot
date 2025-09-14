@@ -87,3 +87,8 @@ def run_crawler():
 
 if __name__ == "__main__":
     run_crawler()
+
+
+    # backward compatibility for api/main.py
+run_scan = run_crawler
+
