@@ -4,7 +4,8 @@ import tldextract
 import requests
 import psycopg2
 from dotenv import load_dotenv
-from detector import get_company  # WHOIS-based company lookup
+from scanner.detector import get_company
+  # WHOIS-based company lookup
 
 load_dotenv()
 

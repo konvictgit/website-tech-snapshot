@@ -1,10 +1,15 @@
 # crawler.py
 import requests
-import psycopg2
-import time
-from scanner.detector import detect_technologies, get_company
+import asyncio
+import aiohttp
+from bs4 import BeautifulSoup
 
-from db import connect_db
+# 👇 FIXED import
+from scanner.detector import detect_technologies, get_company
+from scanner.db import get_conn, upsert_website, insert_detection
+from scanner.db import connect_db
+
+
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; MiniMixRankBot/1.0)"}
 
